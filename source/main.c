@@ -1,5 +1,6 @@
 #include "library.h"
 #include "grid.h"
+#include "player.h"
 
 int main(){
     initscr();
@@ -18,20 +19,19 @@ int main(){
     keypad(win,TRUE);
 
     echo();
+
     Grid grid=createGrid(win);
-    Form newform,form=createForms();
-    int height,width;
-    form.currentForm=1;
-    newform=generateNewForm(form,&height,&width);
-    grid.x1=0;
-    grid.y1=rand()%(grid.N-width+1);
-    grid.x2=height-1;
-    grid.y2=grid.y1+width-1;
-    mvwprintw(win,10,5,"%d %d %d",newform.currentForm,grid.y1,grid.y2);
-
-    displayGrid(grid,newform,win);
+    Form form=createForms();
+    Timer timer;
+    Player player;
     noecho();
+    timer.speed=400;
+    do{
+        playerMovement(&grid,&timer,&player,form,win);
+        grid=deleteLine(grid,win);
+    }while(loseCondition(grid)==0);
 
+    wtimeout(win,-1);
     wgetch(win);
     wclear(win);
     clear();

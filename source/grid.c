@@ -63,15 +63,10 @@ void displayGrid(Grid grid, Form form, WINDOW *win){
             mvwprintw(win,line+i,column+grid.N,"|");
         }
         for(j=0;j<grid.N;j++){
-            if(i>=grid.x1 && i<=grid.x2 && j>=grid.y1 && j<=grid.y2){
-                if(form.tab[form.currentForm][i-grid.x1][j-grid.y1]!=0){
-                    wattron(win,COLOR_PAIR(form.currentForm+1) | A_BOLD);
-                    mvwprintw(win,line+i,column+j,"*");
-                    wattroff(win,COLOR_PAIR(form.currentForm+1) | A_BOLD);
-                }
-                else{
-                    mvwprintw(win,line+i,column+j," ");
-                }
+            if(i>=grid.x1 && i<=grid.x2 && j>=grid.y1 && j<=grid.y2 && form.tab[form.currentForm][i-grid.x1][j-grid.y1]!=0){
+                wattron(win,COLOR_PAIR(form.currentForm+1) | A_BOLD);
+                mvwprintw(win,line+i,column+j,"*");
+                wattroff(win,COLOR_PAIR(form.currentForm+1) | A_BOLD);
             }
             else{
                 if(grid.tab[i][j]==0){
@@ -90,4 +85,45 @@ void displayGrid(Grid grid, Form form, WINDOW *win){
     }
 
     wrefresh(win);
+}
+
+Grid gravityEffect(Grid grid, int line){
+    int i=0,j=0;
+    for(j=0;j<grid.N;j++){
+        grid.tab[line][j]=0;
+    }
+    for(i=line;i>0;i--){
+        for(j=0;j<grid.N;j++){
+            grid.tab[i][j]=grid.tab[i-1][j];
+        }
+    }
+    return grid;
+}
+
+Grid deleteLine(Grid grid, WINDOW *win){
+    int i=0,j=0,completeLine=0;
+    for(i=5;i<grid.M;i++){
+        completeLine=1;
+        for(j=0;j<grid.N;j++){
+            if(grid.tab[i][j]==0){
+                completeLine=0;
+            }
+        }
+        if(completeLine==1){
+            grid=gravityEffect(grid,i);
+        }
+    }
+    return grid;
+}
+
+int loseCondition(Grid grid){
+    int i=0,j=0;
+    for(i=0;i<5;i++){
+        for(j=0;j<grid.N;j++){
+            if(grid.tab[i][j]!=0){
+                return 1;
+            }
+        }
+    }
+    return 0;
 }
