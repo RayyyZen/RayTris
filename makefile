@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra
-LIBS = -lncurses
+LIBS = -lncursesw
 SRCDIR = source
 INCDIR = include
 

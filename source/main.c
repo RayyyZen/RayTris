@@ -3,7 +3,9 @@
 #include "player.h"
 
 int main(){
+    setlocale(LC_ALL, "");
     initscr();
+    //cbreak();
     curs_set(0);
     //To remove the mark of the cursor
     clear();
@@ -11,11 +13,13 @@ int main(){
     keypad(stdscr, TRUE);
     //To activate the special keys as KEY_DOWN, KEY_UP ....
     noecho();
-    initializeColor();
     srand(time(NULL));
+    initializeColor();
 
     WINDOW *win =newwin(BOXLINES,BOXCOLUMNS,0,0);
     //To create a new window
+    wbkgd(win, COLOR_PAIR(1));
+
     keypad(win,TRUE);
 
     echo();
@@ -25,10 +29,10 @@ int main(){
     Timer timer;
     Player player;
     noecho();
-    timer.speed=400;
+    timer.speed=100;
     do{
         playerMovement(&grid,&timer,&player,form,win);
-        grid=deleteLine(grid,win);
+        grid=deleteLine(grid);
     }while(loseCondition(grid)==0);
 
     wtimeout(win,-1);

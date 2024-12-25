@@ -54,9 +54,60 @@ Grid createGrid(WINDOW *win){
     return grid;
 }
 
+void displayEmoji(WINDOW *win, int x, int y, int form){
+    switch(form){
+        case IFORM :
+            mvwprintw(win,x,y,"🟦");
+            break;
+        case JFORM :
+            mvwprintw(win,x,y,"🟫");
+            break;
+        case LFORM :
+            mvwprintw(win,x,y,"🟧");
+            break;
+        case OFORM :
+            mvwprintw(win,x,y,"🟨");
+            break;
+        case SFORM :
+            mvwprintw(win,x,y,"🟩");
+            break;
+        case ZFORM :
+            mvwprintw(win,x,y,"🟥");
+            break;
+        case TFORM :
+            mvwprintw(win,x,y,"🟪");
+            break;
+        default :
+            mvwprintw(win,x,y,"  ");
+    }
+}
+
+
 void displayGrid(Grid grid, Form form, WINDOW *win){
     int i=0,j=0,line=BOXLINES/2-grid.M/2,column=(13*BOXCOLUMNS)/20-grid.N/2;
-    box(win,0,0);
+    for(i=0;i<grid.M;i++){
+        for(j=0;j<grid.N;j++){
+            if(i>=grid.x1 && i<=grid.x2 && j>=grid.y1 && j<=grid.y2 && form.tab[form.currentForm][i-grid.x1][j-grid.y1]!=0){
+                displayEmoji(win,line+i,column+2*j,form.currentForm+1);
+            }
+            else{
+                displayEmoji(win,line+i,column+2*j,grid.tab[i][j]);
+            }
+        }
+        if(i>4){
+            mvwprintw(win,line+i,column-2,"🔲");
+            mvwprintw(win,line+i,column+2*grid.N,"🔲");
+        }
+    }
+    for(j=-1;j<=grid.N;j++){
+        mvwprintw(win,line+i,column+2*j,"🔲");
+    }
+}
+
+
+/*
+void displayGrid(Grid grid, Form form, WINDOW *win){
+    int i=0,j=0,line=BOXLINES/2-grid.M/2,column=(13*BOXCOLUMNS)/20-grid.N/2;
     for(i=0;i<grid.M;i++){
         if(i>4){
             mvwprintw(win,line+i,column-1,"|");
@@ -84,8 +135,8 @@ void displayGrid(Grid grid, Form form, WINDOW *win){
         mvwprintw(win,line+i,column+j,"-");
     }
 
-    wrefresh(win);
 }
+*/
 
 Grid gravityEffect(Grid grid, int line){
     int i=0,j=0;
@@ -100,7 +151,7 @@ Grid gravityEffect(Grid grid, int line){
     return grid;
 }
 
-Grid deleteLine(Grid grid, WINDOW *win){
+Grid deleteLine(Grid grid){
     int i=0,j=0,completeLine=0;
     for(i=5;i<grid.M;i++){
         completeLine=1;

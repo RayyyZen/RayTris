@@ -22,9 +22,10 @@ typedef struct{
 int absoluteValue(int value);
 int stringToInteger(char string[3], int min, int max);
 Grid createGrid(WINDOW *win);
+void displayEmoji(WINDOW *win, int x, int y, int form);
 void displayGrid(Grid grid, Form form, WINDOW *win);
 Grid gravityEffect(Grid grid, int line);
-Grid deleteLine(Grid grid, WINDOW *win);
+Grid deleteLine(Grid grid);
 int loseCondition(Grid grid);
 
 #endif

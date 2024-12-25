@@ -6,6 +6,14 @@
 #define NUMBERFORMS 7
 #define DIMENSION 4
 
+#define IFORM 1
+#define JFORM 2
+#define LFORM 3
+#define OFORM 4
+#define SFORM 5
+#define ZFORM 6
+#define TFORM 7
+
 typedef struct{
     int tab[NUMBERFORMS][DIMENSION][DIMENSION];
     int currentForm;

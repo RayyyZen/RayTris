@@ -13,8 +13,16 @@ void playerMovement(Grid *grid, Timer *timer, Player *player, Form form, WINDOW 
 
     clock_gettime(CLOCK_REALTIME,&current);
     start=current.tv_sec*1000+current.tv_nsec/1000000;
-    wtimeout(win,timer->speed);
     do{
+        werase(win);
+        win =newwin(BOXLINES,BOXCOLUMNS,0,0);
+        wbkgd(win, COLOR_PAIR(1));
+        keypad(win,TRUE);
+        box(win,ACS_VLINE, ACS_HLINE);
+        wtimeout(win,timer->speed);
+        displayGrid(*grid,newform,win);
+        movement=wgetch(win);
+        wrefresh(win);
         clock_gettime(CLOCK_REALTIME,&current);
         final=current.tv_sec*1000+current.tv_nsec/1000000;
         passedTime+=final-start;
@@ -39,11 +47,6 @@ void playerMovement(Grid *grid, Timer *timer, Player *player, Form form, WINDOW 
             }
             passedTime=0;
         }
-
-        werase(win);
-        displayGrid(*grid,newform,win);
-        wrefresh(win);
-        movement=wgetch(win);
 
         if(movement==KEY_RIGHT || movement=='d'){
             right=1;
