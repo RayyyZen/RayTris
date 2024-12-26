@@ -1,6 +1,7 @@
 #ifndef LIBRARY_H
 #define LIBRARY_H
 
+#define _POSIX_C_SOURCE 200809L
 #include <ncurses.h>
 #include <locale.h>
 #include <stdio.h>

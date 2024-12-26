@@ -93,7 +93,8 @@ int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, F
     struct timespec current;
     long start=0,final=0,passedTime=0;
     int i=0,j=0,right=0,left=0,down=0;
-    int movement=0;
+    int movement=0,validRotation;
+    Form tmpform;
 
     timer->speed=MINSPEED-25*(timer->elapsedTime/30);
 
@@ -160,6 +161,29 @@ int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, F
                 grid->y2--;
             }
         }
+        else if(movement==' '){
+            tmpform=currentform;
+            rotateForm(tmpform.tab[tmpform.currentForm]);
+            shiftFormLeftUp(tmpform.tab[tmpform.currentForm]);
+            getFormDimensions(tmpform.tab[tmpform.currentForm],&tmpform.height,&tmpform.width);
+            grid->x2=grid->x1+tmpform.height-1;
+            grid->y2=grid->y1+tmpform.width-1;
+            validRotation=1;
+            for(i=grid->x1;i<=grid->x2;i++){
+                for(j=grid->y1;j<=grid->y2;j++){
+                    if(tmpform.tab[tmpform.currentForm][i-grid->x1][j-grid->y1]!=0 && (i>grid->M-1 || j>grid->N-1 || i<0 || j<0 || grid->tab[i][j]!=0)){
+                        validRotation=0;
+                    }                    
+                }
+            }
+            if(validRotation==1){
+                currentform=tmpform;
+            }
+            else{
+                grid->x2=grid->x1+currentform.height-1;
+                grid->y2=grid->y1+currentform.width-1;
+            }
+        }
     }while(1);
 
     for(i=grid->x1;i<=grid->x2;i++){
@@ -171,4 +195,39 @@ int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, F
     }
 
     return 0;
+}
+
+Grid gravityEffect(Grid grid, int line){
+    int i=0,j=0,k=0;
+
+    for(i=line;i>0;i--){
+        for(j=0;j<grid.N;j++){
+            grid.tab[i][j]=grid.tab[i-1][j];
+            grid.tab[i-1][j]=0;
+        }
+    }
+
+    return grid;
+}
+
+int deleteLine(Grid *grid, Player player, Timer *timer, Form currentform, Form nextform, WINDOW *win){
+    int i=0,j=0,completeLine=0,counter=0;
+    for(i=5;i<grid->M;i++){
+        completeLine=1;
+        for(j=0;j<grid->N;j++){
+            if(grid->tab[i][j]==0){
+                completeLine=0;
+            }
+        }
+        if(completeLine==1){
+            for(j=0;j<grid->N;j++){
+                grid->tab[i][j]=0;
+            }
+            *grid=gravityEffect(*grid,i);
+            displayScreen(*grid,timer,player,currentform,nextform,&win);
+            usleep(500000);
+            counter++;
+        }
+    }
+    return counter;
 }

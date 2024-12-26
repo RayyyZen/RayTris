@@ -18,5 +18,7 @@ Player createPlayer(WINDOW *win, int points[4]);
 void displayScreen(Grid grid, Timer *timer, Player player, Form currentform, Form nextform, WINDOW **win);
 void getFormCoordinates(Grid *grid, Form currentform);
 int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, Form nextform, WINDOW *win);
+Grid gravityEffect(Grid grid, int line);
+int deleteLine(Grid *grid, Player player, Timer *timer, Form currentform, Form nextform, WINDOW *win);
 
 #endif

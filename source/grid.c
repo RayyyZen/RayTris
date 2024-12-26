@@ -112,35 +112,7 @@ void displayGrid(Grid grid, Form form, WINDOW *win){
     }
 }
 
-Grid gravityEffect(Grid grid, int line){
-    int i=0,j=0;
-    for(j=0;j<grid.N;j++){
-        grid.tab[line][j]=0;
-    }
-    for(i=line;i>0;i--){
-        for(j=0;j<grid.N;j++){
-            grid.tab[i][j]=grid.tab[i-1][j];
-        }
-    }
-    return grid;
-}
 
-int deleteLine(Grid *grid){
-    int i=0,j=0,completeLine=0,counter=0;
-    for(i=5;i<grid->M;i++){
-        completeLine=1;
-        for(j=0;j<grid->N;j++){
-            if(grid->tab[i][j]==0){
-                completeLine=0;
-            }
-        }
-        if(completeLine==1){
-            *grid=gravityEffect(*grid,i);
-            counter++;
-        }
-    }
-    return counter;
-}
 
 int loseCondition(Grid grid){
     int i=0,j=0;

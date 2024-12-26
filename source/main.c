@@ -59,7 +59,11 @@ int main(){
             break;
         }
         player.numberForms++;
-        delete=deleteLine(&grid);
+        grid.x1=-1;
+        grid.x2=-1;
+        grid.y1=-1;
+        grid.y2=-1;
+        delete=deleteLine(&grid,player,&timer,currentform,nextform,win);
         player.clearedLines+=delete;
         if(delete!=0){
             player.score+=player.points[delete-1];
