@@ -23,7 +23,7 @@ Form createForms(){
         {
             {1,1,1,0},{0,1,0,0},{0,0,0,0},{0,0,0,0}
         },
-    },-1};
+    },-1,-1,-1};
     return form;
 }
 
@@ -110,13 +110,13 @@ void getFormDimensions(int tab[DIMENSION][DIMENSION], int *height, int *width){
     }
 }
 
-Form generateNewForm(Form form, int *height, int *width){
+Form generateNewForm(Form form){
     int i=0,numberRotations=rand()%3;
     form.currentForm=rand()%NUMBERFORMS;
     for(i=0;i<numberRotations;i++){
         rotateForm(form.tab[form.currentForm]);
     }
     shiftFormLeftUp(form.tab[form.currentForm]);
-    getFormDimensions(form.tab[form.currentForm],height,width);
+    getFormDimensions(form.tab[form.currentForm],&form.height,&form.width);
     return form;
 }

@@ -4,10 +4,10 @@
 #include "library.h"
 #include "gameform.h"
 
-#define MINHEIGHT 5
+#define MINHEIGHT 10
 #define MAXHEIGHT 18
 #define MINWIDTH 10
-#define MAXWIDTH 60
+#define MAXWIDTH 25
 
 typedef struct{
     int **tab;
@@ -21,11 +21,12 @@ typedef struct{
 
 int absoluteValue(int value);
 int stringToInteger(char string[3], int min, int max);
+int** createArray(int height, int width);
 Grid createGrid(WINDOW *win);
 void displayEmoji(WINDOW *win, int x, int y, int form);
 void displayGrid(Grid grid, Form form, WINDOW *win);
 Grid gravityEffect(Grid grid, int line);
-Grid deleteLine(Grid grid);
+int deleteLine(Grid *grid);
 int loseCondition(Grid grid);
 
 #endif

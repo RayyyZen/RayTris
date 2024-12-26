@@ -20,34 +20,42 @@ int stringToInteger(char string[3], int min, int max){
     }
 }
 
-Grid createGrid(WINDOW *win){
-    Grid grid={NULL,0,0,-1,-1,-1,-1};
-    char string[3];
+int** createArray(int height, int width){
+    int **tab=NULL;
     int i=0;
 
-    box(win,0,0);
-    mvwprintw(win,2,2,"Choose the height of the grid between %d and %d :",MINHEIGHT,MAXHEIGHT);
-    wrefresh(win);
-    mvwgetnstr(win,2,52,string,2);
-    grid.M=stringToInteger(string,MINHEIGHT,MAXHEIGHT)+5;
-
-    box(win,0,0);
-    mvwprintw(win,4,2,"Choose the width of the grid between %d and %d :",MINWIDTH,MAXWIDTH);
-    wrefresh(win);
-    mvwgetnstr(win,4,51,string,2);
-    grid.N=stringToInteger(string,MINWIDTH,MAXWIDTH);
-
-    grid.tab=calloc(grid.M,sizeof(int*));
-    if(grid.tab==NULL){
+    tab=calloc(height,sizeof(int*));
+    if(tab==NULL){
         exit(10);
     }
 
-    for(i=0;i<grid.M;i++){
-        grid.tab[i]=calloc(grid.N,sizeof(int));
-        if(grid.tab[i]==NULL){
+    for(i=0;i<height;i++){
+        tab[i]=calloc(width,sizeof(int));
+        if(tab[i]==NULL){
             exit(11);
         }
     }
+
+    return tab;
+}
+
+Grid createGrid(WINDOW *win){
+    Grid grid={NULL,0,0,-1,-1,-1,-1};
+    char string[3];
+
+    box(win,0,0);
+    mvwprintw(win,12,2,"Choose the height of the grid between %d and %d :",MINHEIGHT,MAXHEIGHT);
+    wrefresh(win);
+    mvwgetnstr(win,12,52,string,2);
+    grid.M=stringToInteger(string,MINHEIGHT,MAXHEIGHT)+5;
+
+    box(win,0,0);
+    mvwprintw(win,14,2,"Choose the width of the grid between %d and %d :",MINWIDTH,MAXWIDTH);
+    wrefresh(win);
+    mvwgetnstr(win,14,51,string,2);
+    grid.N=stringToInteger(string,MINWIDTH,MAXWIDTH);
+
+    grid.tab=createArray(grid.M,grid.N);
 
     werase(win);
 
@@ -84,7 +92,7 @@ void displayEmoji(WINDOW *win, int x, int y, int form){
 
 
 void displayGrid(Grid grid, Form form, WINDOW *win){
-    int i=0,j=0,line=BOXLINES/2-grid.M/2,column=(13*BOXCOLUMNS)/20-grid.N/2;
+    int i=0,j=0,line=BOXLINES/2-grid.M/2,column=(11*BOXCOLUMNS)/20-grid.N/2;
     for(i=0;i<grid.M;i++){
         for(j=0;j<grid.N;j++){
             if(i>=grid.x1 && i<=grid.x2 && j>=grid.y1 && j<=grid.y2 && form.tab[form.currentForm][i-grid.x1][j-grid.y1]!=0){
@@ -104,40 +112,6 @@ void displayGrid(Grid grid, Form form, WINDOW *win){
     }
 }
 
-
-/*
-void displayGrid(Grid grid, Form form, WINDOW *win){
-    int i=0,j=0,line=BOXLINES/2-grid.M/2,column=(13*BOXCOLUMNS)/20-grid.N/2;
-    for(i=0;i<grid.M;i++){
-        if(i>4){
-            mvwprintw(win,line+i,column-1,"|");
-            mvwprintw(win,line+i,column+grid.N,"|");
-        }
-        for(j=0;j<grid.N;j++){
-            if(i>=grid.x1 && i<=grid.x2 && j>=grid.y1 && j<=grid.y2 && form.tab[form.currentForm][i-grid.x1][j-grid.y1]!=0){
-                wattron(win,COLOR_PAIR(form.currentForm+1) | A_BOLD);
-                mvwprintw(win,line+i,column+j,"*");
-                wattroff(win,COLOR_PAIR(form.currentForm+1) | A_BOLD);
-            }
-            else{
-                if(grid.tab[i][j]==0){
-                    mvwprintw(win,line+i,column+j," ");
-                }
-                else{
-                    wattron(win,COLOR_PAIR(grid.tab[i][j]) | A_BOLD);
-                    mvwprintw(win,line+i,column+j,"*");
-                    wattroff(win,COLOR_PAIR(grid.tab[i][j]) | A_BOLD);
-                }
-            }
-        }
-    }
-    for(j=0;j<grid.N;j++){
-        mvwprintw(win,line+i,column+j,"-");
-    }
-
-}
-*/
-
 Grid gravityEffect(Grid grid, int line){
     int i=0,j=0;
     for(j=0;j<grid.N;j++){
@@ -151,20 +125,21 @@ Grid gravityEffect(Grid grid, int line){
     return grid;
 }
 
-Grid deleteLine(Grid grid){
-    int i=0,j=0,completeLine=0;
-    for(i=5;i<grid.M;i++){
+int deleteLine(Grid *grid){
+    int i=0,j=0,completeLine=0,counter=0;
+    for(i=5;i<grid->M;i++){
         completeLine=1;
-        for(j=0;j<grid.N;j++){
-            if(grid.tab[i][j]==0){
+        for(j=0;j<grid->N;j++){
+            if(grid->tab[i][j]==0){
                 completeLine=0;
             }
         }
         if(completeLine==1){
-            grid=gravityEffect(grid,i);
+            *grid=gravityEffect(*grid,i);
+            counter++;
         }
     }
-    return grid;
+    return counter;
 }
 
 int loseCondition(Grid grid){
