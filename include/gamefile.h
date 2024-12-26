@@ -19,5 +19,6 @@ void recoverArray(Grid *grid, char *fileName);
 void recoverGame(Grid *grid, Player *player, Timer *timer, Form *currentform, Form *nextform, char *fileName);
 void removeSaves(char *fileName1, char *fileName2);
 int existFile(char *fileName);
+void addFileScore(char *fileName, Player player);
 
 #endif

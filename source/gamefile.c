@@ -97,3 +97,54 @@ int existFile(char *fileName){
     fclose(file);
     return 1;
 }
+
+void addFileScore(char *fileName, Player player){
+    FILE *file=fopen(fileName,"r");
+    char tabUserName[4][20];
+    int tabScore[4]={0};
+    int counter=0;
+
+    if(file==NULL){
+        exit(202);
+    }
+    while(fscanf(file,"%s %d",tabUserName[counter],&tabScore[counter])!=EOF){
+        counter++;
+    }
+    strcpy(tabUserName[counter],player.username);
+    tabScore[counter]=player.score;
+    fclose(file);
+
+    FILE *file2=fopen(fileName,"w");
+    if(file==NULL){
+        exit(203);
+    }
+    int i=0,j=0,tmp=0;
+    char tmpname[15];
+
+    for(i=0;i<=counter-1;i++){
+        for(j=i;j<=counter;j++){
+            if(tabScore[j]>tabScore[i]){
+                tmp=tabScore[i];
+                tabScore[i]=tabScore[j];
+                tabScore[j]=tmp;
+
+                strcpy(tmpname,tabUserName[i]);
+                strcpy(tabUserName[i],tabUserName[j]);
+                strcpy(tabUserName[j],tmpname);
+            }
+        }
+    }
+
+    for(i=0;i<=counter;i++){
+        if(i<3){
+            if(tabUserName[i][0]=='\0'){
+                fprintf(file2,"%s %d\n","NoName",tabScore[i]);
+            }
+            else{
+                fprintf(file2,"%s %d\n",tabUserName[i],tabScore[i]);
+            }
+        }
+    }
+
+    fclose(file2);
+}

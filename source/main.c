@@ -83,6 +83,14 @@ int main(){
     wgetch(win);
 
     if(movement!=-1){
+        if(existFile("topScores.txt")==0){
+            FILE *file=fopen("topScores.txt","w");
+            if(file==NULL){
+                exit(204);
+            }
+            fclose(file);
+        }
+        addFileScore("topScores.txt",player);
         removeSaves(fileNameGame,fileNameArray);
     }
     else{
