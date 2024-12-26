@@ -83,20 +83,30 @@ void displayMenu(WINDOW *win, int choice[CHOICES], int cursor){
     }
 }
 
-int movementMenu(WINDOW *win, int *cursor, int size, int mode){
+int movementMenu(WINDOW *win, int *cursor, int size, int choice, int mode){
     int movement=wgetch(win);
     if((movement==KEY_LEFT || movement=='q') && *cursor>0){
-        (*cursor)--;
+        if(mode==-1 && *cursor-1==RESUMEGAME && existFile("normalGame.bin")==0 && existFile("customGame.bin")==0){
+            (*cursor)-=2;
+        }
+        else if(choice!=RESUMEGAME || mode==-1 || (existFile("normalGame.bin")==1 && existFile("customGame.bin")==1)){
+            (*cursor)--;
+        }
         return 0;
     }
     else if((movement==KEY_RIGHT || movement=='d') && *cursor<size-1){
-        (*cursor)++;
+        if(mode==-1 && *cursor+1==RESUMEGAME && existFile("normalGame.bin")==0 && existFile("customGame.bin")==0){
+            (*cursor)+=2;
+        }
+        else if(choice!=RESUMEGAME || mode==-1 || (existFile("normalGame.bin")==1 && existFile("customGame.bin")==1)){
+            (*cursor)++;
+        }
         return 0;
     }
     else if(movement=='\n'){
         return 1;
     }
-    else if(mode==1 && movement=='b'){
+    else if(mode!=-1 && movement=='b'){
         return 2;
     }
     return 0;
@@ -132,12 +142,15 @@ void choiceMenu(int *menuchoice, int *gamemode){
             box(win,0,0);
 
             displayMenu(win,choice,cursor);
-            userchoice=movementMenu(win,&cursor,CHOICES,0);
+            userchoice=movementMenu(win,&cursor,CHOICES,choice[cursor],-1);
             wrefresh(win);
         }while(userchoice==0);
 
         if(choice[cursor]!=EXIT){
             cursormode=0;
+            if(choice[cursor]==RESUMEGAME && existFile("normalGame.bin")==0){
+                cursormode=1;
+            }
             do{
                 werase(win);
                 win=newwin(BOXLINES,BOXCOLUMNS,0,0);
@@ -157,7 +170,7 @@ void choiceMenu(int *menuchoice, int *gamemode){
                     wattroff(win,COLOR_PAIR(7) | A_BOLD);
                     displayNormalMode(win);
                 }
-                usermodechoice=movementMenu(win,&cursormode,MODES,1);
+                usermodechoice=movementMenu(win,&cursormode,MODES,choice[cursor],mode[cursormode]);
                 wrefresh(win);
             }while(usermodechoice==0);
         }
@@ -167,19 +180,23 @@ void choiceMenu(int *menuchoice, int *gamemode){
     }while(usermodechoice==2);
 
     *menuchoice=choice[cursor];
-    *gamemode=mode[cursormode];
+    if(cursormode==-1){
+        *gamemode=-1;
+    }
+    else{
+        *gamemode=mode[cursormode];
+    }
 }
 
-int menu(Grid *grid, Player *player, Timer *timer, Form form, Form *currentform, Form *nextform){
-    int choice=0,mode=0;
-    choiceMenu(&choice,&mode);
+void menu(int *choice, int *mode, Grid *grid, Player *player, Timer *timer, Form form, Form *currentform, Form *nextform){
+    choiceMenu(choice,mode);
     WINDOW *win=newwin(BOXLINES,BOXCOLUMNS,0,0);
     echo();
-    switch(choice){
+    switch(*choice){
         case EXIT :
             wclear(win);
             delwin(win);
-            return -1;
+            break;
 
         case NEWGAME :
             int points[4]={100,300,500,800};
@@ -190,7 +207,7 @@ int menu(Grid *grid, Player *player, Timer *timer, Form form, Form *currentform,
             timer->speed=MINSPEED;
             *currentform=generateNewForm(form);
             *nextform=generateNewForm(form);
-            if(mode==NORMALMODE){
+            if(*mode==NORMALMODE){
                 *player=createPlayer(win,points);
                 grid->M=20;
                 grid->N=10;
@@ -204,14 +221,20 @@ int menu(Grid *grid, Player *player, Timer *timer, Form form, Form *currentform,
             break;
 
         case RESUMEGAME :
-            if(mode==NORMALMODE){
+            char fileNameGame[20],fileNameArray[20];
 
+            if(*mode==NORMALMODE){
+                strcpy(fileNameGame,"normalGame.bin");
+                strcpy(fileNameArray,"normalArray.bin");
             }
             else{
-                
+                strcpy(fileNameGame,"customGame.bin");
+                strcpy(fileNameArray,"customArray.bin");
             }
+
+            recoverGame(grid,player,timer,currentform,nextform,fileNameGame);
+            recoverArray(grid,fileNameArray);
+            timer->start=time(NULL)-timer->elapsedTime;
             break;
     }
-    noecho();
-    return 0;
 }

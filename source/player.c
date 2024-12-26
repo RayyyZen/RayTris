@@ -82,15 +82,18 @@ void displayScreen(Grid grid, Timer *timer, Player player, Form currentform, For
     wrefresh(*win);
 }
 
-void playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, Form nextform, WINDOW *win){
-    struct timespec current;
-    long start=0,final=0,passedTime=0;
-    int i=0,j=0,right=0,left=0,down=0;
-    int movement=0;
+void getFormCoordinates(Grid *grid, Form currentform){
     grid->x1=0;
     grid->y1=rand()%(grid->N-currentform.width+1);
     grid->x2=currentform.height-1;
     grid->y2=grid->y1+currentform.width-1;
+}
+
+int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, Form nextform, WINDOW *win){
+    struct timespec current;
+    long start=0,final=0,passedTime=0;
+    int i=0,j=0,right=0,left=0,down=0;
+    int movement=0;
 
     timer->speed=MINSPEED-25*(timer->elapsedTime/30);
 
@@ -99,6 +102,10 @@ void playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, 
     do{
         displayScreen(*grid,timer,*player,currentform,nextform,&win);
         movement=wgetch(win);
+
+        if(movement=='l'){
+            return -1;
+        }
 
         clock_gettime(CLOCK_REALTIME,&current);
         final=current.tv_sec*1000+current.tv_nsec/1000000;
@@ -162,4 +169,6 @@ void playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, 
             }
         }
     }
+
+    return 0;
 }

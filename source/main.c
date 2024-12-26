@@ -1,7 +1,7 @@
 #include "library.h"
 #include "grid.h"
 #include "player.h"
-#include "menu.h"
+#include "gamemenu.h"
 
 int main(){
     setlocale(LC_ALL, "");
@@ -21,11 +21,28 @@ int main(){
     Grid grid;
     Form form=createForms(),nextform,currentform;
     Timer timer;
+    int choice=-1,mode=-1;
+    menu(&choice,&mode,&grid,&player,&timer,form,&currentform,&nextform);
+    noecho();
 
-    if(menu(&grid,&player,&timer,form,&currentform,&nextform)==-1){
+    char fileNameGame[20],fileNameArray[20];
+
+    if(choice==EXIT){
         clear();
         endwin();
         return 0;
+    }
+    else if(choice==NEWGAME){
+        getFormCoordinates(&grid,currentform);
+    }
+
+    if(mode==NORMALMODE){
+        strcpy(fileNameGame,"normalGame.bin");
+        strcpy(fileNameArray,"normalArray.bin");
+    }
+    else if(mode==CUSTOMMODE){
+        strcpy(fileNameGame,"customGame.bin");
+        strcpy(fileNameArray,"customArray.bin");
     }
 
     WINDOW *win =newwin(BOXLINES,BOXCOLUMNS,0,0);
@@ -34,10 +51,13 @@ int main(){
 
     keypad(win,TRUE);
 
-    int delete=0;
+    int delete=0,movement=0;
 
     do{
-        playerMovement(&grid,&timer,&player,currentform,nextform,win);
+        movement=playerMovement(&grid,&timer,&player,currentform,nextform,win);
+        if(movement==-1){
+            break;
+        }
         player.numberForms++;
         delete=deleteLine(&grid);
         player.clearedLines+=delete;
@@ -49,6 +69,7 @@ int main(){
             break;
         }
         currentform=nextform;
+        getFormCoordinates(&grid,currentform);
         nextform=generateNewForm(form);
     }while(loseCondition(grid)==0);
 
@@ -56,6 +77,16 @@ int main(){
     displayScreen(grid,&timer,player,currentform,nextform,&win);
     wtimeout(win,-1);
     wgetch(win);
+
+    if(movement!=-1){
+        removeSaves(fileNameGame,fileNameArray);
+    }
+    else{
+        saveArray(grid,fileNameArray);
+        destroyGrid(&grid);
+        saveGame(grid,player,timer,currentform,nextform,fileNameGame);
+    }
+
     wclear(win);
     clear();
     delwin(win);
