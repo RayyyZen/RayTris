@@ -114,7 +114,7 @@ int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, F
         clock_gettime(CLOCK_REALTIME,&current);
         start=current.tv_sec*1000+current.tv_nsec/1000000;
 
-        if(passedTime>=timer->speed){
+        if(movement==KEY_DOWN || movement=='s' || passedTime>=timer->speed){
             down=1;
             for(i=grid->x1;i<=grid->x2;i++){
                 for(j=grid->y1;j<=grid->y2;j++){
