@@ -1,7 +1,6 @@
 #ifndef GRID_H
 #define GRID_H
 
-#include "library.h"
 #include "gameform.h"
 
 #define MINHEIGHT 10
