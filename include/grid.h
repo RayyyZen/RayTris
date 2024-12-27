@@ -25,6 +25,8 @@ int** createArray(int height, int width);
 Grid createGrid(WINDOW *win);
 void displayEmoji(WINDOW *win, int x, int y, int form);
 void displayGrid(Grid grid, Form form, WINDOW *win);
+Grid gravityEffect(Grid grid, int line);
+int deleteLine(Grid *grid);
 int loseCondition(Grid grid);
 
 #endif

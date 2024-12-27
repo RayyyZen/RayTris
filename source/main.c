@@ -1,6 +1,3 @@
-#include "library.h"
-#include "grid.h"
-#include "player.h"
 #include "gamemenu.h"
 
 int main(){
@@ -17,87 +14,101 @@ int main(){
     srand(time(NULL));
     initializeColor();
 
+    WINDOW *win=newwin(BOXLINES,BOXCOLUMNS,0,0);
     Player player;
     Grid grid;
     Form form=createForms(),nextform,currentform;
     Timer timer;
-    int choice=-1,mode=-1;
-    menu(&choice,&mode,&grid,&player,&timer,form,&currentform,&nextform);
-    noecho();
-
+    int choice=-1,mode=-1,delete=0,movement=0,counter=0,car=0;
     char fileNameGame[20],fileNameArray[20];
-
-    if(choice==EXIT){
-        clear();
-        endwin();
-        return 0;
-    }
-    else if(choice==NEWGAME){
-        getFormCoordinates(&grid,currentform);
-    }
-
-    if(mode==NORMALMODE){
-        strcpy(fileNameGame,"normalGame.bin");
-        strcpy(fileNameArray,"normalArray.bin");
-    }
-    else if(mode==CUSTOMMODE){
-        strcpy(fileNameGame,"customGame.bin");
-        strcpy(fileNameArray,"customArray.bin");
-    }
-
-    WINDOW *win =newwin(BOXLINES,BOXCOLUMNS,0,0);
-    //To create a new window
-    wbkgd(win, COLOR_PAIR(1));
-
-    keypad(win,TRUE);
-
-    int delete=0,movement=0;
+    struct timespec ts;
+    ts.tv_sec = 0;           // Secondes
+    ts.tv_nsec = 200 * 1000000L; // 200 millisecondes en nanosecondes
 
     do{
-        movement=playerMovement(&grid,&timer,&player,currentform,nextform,win);
-        if(movement==-1){
-            break;
+
+        menu(&choice,&mode,&grid,&player,&timer,form,&currentform,&nextform);
+        noecho();
+
+        if(choice==EXIT){
+            clear();
+            endwin();
+            return 0;
         }
-        player.numberForms++;
-        grid.x1=-1;
-        grid.x2=-1;
-        grid.y1=-1;
-        grid.y2=-1;
-        delete=deleteLine(&grid,player,&timer,currentform,nextform,win);
-        player.clearedLines+=delete;
-        if(delete!=0){
-            player.score+=player.points[delete-1];
+        else if(choice==NEWGAME){
+            getFormCoordinates(&grid,currentform);
         }
 
-        if(loseCondition(grid)!=0){
-            break;
+        if(mode==NORMALMODE){
+            strcpy(fileNameGame,"normalGame.bin");
+            strcpy(fileNameArray,"normalArray.bin");
         }
-        currentform=nextform;
-        getFormCoordinates(&grid,currentform);
-        nextform=generateNewForm(form);
-    }while(loseCondition(grid)==0);
+        else if(mode==CUSTOMMODE){
+            strcpy(fileNameGame,"customGame.bin");
+            strcpy(fileNameArray,"customArray.bin");
+        }
 
-    //Faut que je change cette ligne de sorte a ce que le currentform ne se voit pas car sinon il y a un petit bug d affichage
-    displayScreen(grid,&timer,player,currentform,nextform,&win);
-    wtimeout(win,-1);
-    wgetch(win);
+        movement=0;
 
-    if(movement!=-1){
-        if(existFile("topScores.txt")==0){
-            FILE *file=fopen("topScores.txt","w");
-            if(file==NULL){
-                exit(204);
+        do{
+            if(playerMovement(&grid,&timer,&player,currentform,nextform,win)==-1){
+                movement=-1;
+                break;
             }
-            fclose(file);
+            player.numberForms++;
+            grid.x1=-1;
+            grid.x2=-1;
+            grid.y1=-1;
+            grid.y2=-1;
+            counter=0;
+            do{
+                delete=deleteLine(&grid);
+                displayScreen(grid,&timer,player,currentform,nextform,&win);
+                nanosleep(&ts, NULL);
+                counter+=delete;
+            }while(delete!=0);
+            player.clearedLines+=counter;
+            if(counter!=0){
+                player.score+=player.points[counter-1];
+            }
+
+            if(loseCondition(grid)==0){
+                currentform=nextform;
+                getFormCoordinates(&grid,currentform);
+                nextform=generateNewForm(form);
+            }
+
+        }while(loseCondition(grid)==0);
+
+        if(movement!=-1){
+            if(mode==NORMALMODE && existFile("topScores.txt")==0){
+                FILE *file=fopen("topScores.txt","w");
+                if(file==NULL){
+                    exit(204);
+                }
+                fclose(file);
+            }
+            addFileScore("topScores.txt",player);
+            removeSaves(fileNameGame,fileNameArray);
+            if(mode==NORMALMODE){
+                displayEndScreen(grid,timer,player,currentform,nextform,&win,1);
+            }
+            else{
+                displayEndScreen(grid,timer,player,currentform,nextform,&win,0);
+            }
         }
-        addFileScore("topScores.txt",player);
-        removeSaves(fileNameGame,fileNameArray);
-    }
-    else{
-        saveArray(grid,fileNameArray);
-        destroyGrid(&grid);
-        saveGame(grid,player,timer,currentform,nextform,fileNameGame);
-    }
+        else{
+            displayEndScreen(grid,timer,player,currentform,nextform,&win,0);
+            saveArray(grid,fileNameArray);
+            destroyGrid(&grid);
+            saveGame(grid,player,timer,currentform,nextform,fileNameGame);
+        }
+
+        do{
+            car=wgetch(win);
+        }while(car!='r' && car!='l');
+
+    }while(car=='r');
 
     wclear(win);
     clear();

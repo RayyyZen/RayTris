@@ -9,6 +9,7 @@ Player createPlayer(WINDOW *win, int points[4]){
     mvwprintw(win,2,2,"Choose a username :");
     wrefresh(win);
     mvwgetnstr(win,2,22,player.username,10);
+    player.score=0;
     player.clearedLines=0;
     player.numberForms=0;
 
@@ -46,6 +47,38 @@ Player createPlayer(WINDOW *win, int points[4]){
     return player;
 }
 
+void displayGameKeys(WINDOW *win){
+    mvwprintw(win,1,2,"Press ");
+    mvwprintw(win,2,2,"Press ");
+    mvwprintw(win,3,2,"Press ");
+    mvwprintw(win,4,2,"Press ");
+    mvwprintw(win,5,2,"Press ");
+
+    wattron(win,COLOR_PAIR(7) | A_BOLD);
+    mvwprintw(win,1,8,"'l'");
+    mvwprintw(win,2,8,"'SPACE'");
+    mvwprintw(win,3,8,"'←' ");
+    mvwprintw(win,5,8,"'↓' ");
+    mvwprintw(win,4,8,"'→' ");
+    wattroff(win,COLOR_PAIR(7) | A_BOLD);
+
+    mvwprintw(win,3,12,"or ");
+    mvwprintw(win,5,12,"or ");
+    mvwprintw(win,4,12,"or ");
+
+    wattron(win,COLOR_PAIR(7) | A_BOLD);
+    mvwprintw(win,3,15,"'q'");
+    mvwprintw(win,5,15,"'s'");
+    mvwprintw(win,4,15,"'d'");
+    wattroff(win,COLOR_PAIR(7) | A_BOLD);
+
+    mvwprintw(win,1,11," to stop the game");
+    mvwprintw(win,2,15," to rotate the form");
+    mvwprintw(win,3,18," to move left");
+    mvwprintw(win,4,18," to move right");
+    mvwprintw(win,5,18," to move down");
+}
+
 void displayScreen(Grid grid, Timer *timer, Player player, Form currentform, Form nextform, WINDOW **win){
     int i=0,j=0;
     
@@ -55,25 +88,31 @@ void displayScreen(Grid grid, Timer *timer, Player player, Form currentform, For
     keypad(*win,TRUE);
     box(*win,0,0);
     wtimeout(*win,timer->speed);
+
+    displayGameKeys(*win);
+
+    mvwprintw(*win,7,2,"%s : %d points",player.username,player.score);
+    mvwprintw(*win,8,2,"%d placed forms and %d complete lines",player.numberForms,player.clearedLines);
     
-    mvwprintw(*win,1,2,"%s",player.username);
-    mvwprintw(*win,3,2,"Number of placed forms : %d",player.numberForms);
-    mvwprintw(*win,5,2,"Number of cleared lines : %d",player.clearedLines);
-    mvwprintw(*win,7,2,"Score : %d points",player.score);
-    wattron(*win,COLOR_PAIR(2) | A_BOLD);
     timer->elapsedTime=time(NULL)-timer->start;
-    mvwprintw(*win,9,2,"Time passed : %d",timer->elapsedTime);
-    mvwprintw(*win,11,2,"Drop speed : %d",timer->speed);
-    wattroff(*win,COLOR_PAIR(2) | A_BOLD);
+    wattron(*win,COLOR_PAIR(7) | A_BOLD);
+    mvwprintw(*win,10,2,"Time passed : %d seconds",timer->elapsedTime);
+    mvwprintw(*win,11,2,"Drop speed : %d milliseconds",timer->speed);
+    wattroff(*win,COLOR_PAIR(7) | A_BOLD);
+
     mvwprintw(*win,13,2,"Simple line : %d points",player.points[0]);
-    mvwprintw(*win,15,2,"Double line : %d points",player.points[1]);
-    mvwprintw(*win,17,2,"Triple line : %d points",player.points[2]);
-    mvwprintw(*win,19,2,"Tetris line : %d points",player.points[3]);
-    mvwprintw(*win,21,2,"Next form : ");
+    mvwprintw(*win,14,2,"Double line : %d points",player.points[1]);
+    mvwprintw(*win,15,2,"Triple line : %d points",player.points[2]);
+    mvwprintw(*win,16,2,"Tetris line : %d points",player.points[3]);
+
+    wattron(*win,COLOR_PAIR(7) | A_BOLD);
+    mvwprintw(*win,18,2,"Next form : ");
+    wattroff(*win,COLOR_PAIR(7) | A_BOLD);
+    int column=7-nextform.width;
     for(i=0;i<DIMENSION;i++){
         for(j=0;j<DIMENSION;j++){
             if(nextform.tab[nextform.currentForm][i][j]!=0){
-                displayEmoji(*win,23+i,3+2*j,nextform.currentForm+1);
+                displayEmoji(*win,20+i,column+2*j,nextform.currentForm+1);
             }
         }
     }
@@ -84,7 +123,7 @@ void displayScreen(Grid grid, Timer *timer, Player player, Form currentform, For
 
 void getFormCoordinates(Grid *grid, Form currentform){
     grid->x1=0;
-    grid->y1=rand()%(grid->N-currentform.width+1);
+    grid->y1=grid->N/2-currentform.width/2;
     grid->x2=currentform.height-1;
     grid->y2=grid->y1+currentform.width-1;
 }
@@ -97,6 +136,9 @@ int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, F
     Form tmpform;
 
     timer->speed=MINSPEED-25*(timer->elapsedTime/30);
+    if(timer->speed<MAXSPEED){
+        timer->speed=MAXSPEED;
+    }
 
     clock_gettime(CLOCK_REALTIME,&current);
     start=current.tv_sec*1000+current.tv_nsec/1000000;
@@ -197,37 +239,82 @@ int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, F
     return 0;
 }
 
-Grid gravityEffect(Grid grid, int line){
-    int i=0,j=0,k=0;
-
-    for(i=line;i>0;i--){
-        for(j=0;j<grid.N;j++){
-            grid.tab[i][j]=grid.tab[i-1][j];
-            grid.tab[i-1][j]=0;
-        }
+void displayRanking(WINDOW *win, int line, int column){
+    int counter=0;
+    FILE *file=fopen("topScores.txt","r");
+    int score=0;
+    char username[15];
+    if(file==NULL){
+        return;
     }
-
-    return grid;
+    while(fscanf(file,"%s %d",username,&score)!=EOF){
+        if(counter==0){
+            mvwprintw(win,line+counter,column,"🥇 %s %d points",username,score);
+        }
+        else if(counter==1){
+            mvwprintw(win,line+counter,column,"🥈 %s %d points",username,score);
+        }
+        else{
+            mvwprintw(win,line+counter,column,"🥉 %s %d points",username,score);
+        }
+        counter++;
+    }
+    fclose(file);
 }
 
-int deleteLine(Grid *grid, Player player, Timer *timer, Form currentform, Form nextform, WINDOW *win){
-    int i=0,j=0,completeLine=0,counter=0;
-    for(i=5;i<grid->M;i++){
-        completeLine=1;
-        for(j=0;j<grid->N;j++){
-            if(grid->tab[i][j]==0){
-                completeLine=0;
+void displayEndScreen(Grid grid, Timer timer, Player player, Form currentform, Form nextform, WINDOW **win, int ranking){
+    int i=0,j=0;
+    
+    werase(*win);
+    *win=newwin(BOXLINES,BOXCOLUMNS,0,0);
+    wbkgd(*win,COLOR_PAIR(1));
+    keypad(*win,TRUE);
+    box(*win,0,0);
+    wtimeout(*win,-1);
+
+    mvwprintw(*win,1,2,"Press ");
+    wattron(*win,COLOR_PAIR(7) | A_BOLD);
+    mvwprintw(*win,1,8,"'l'");
+    wattroff(*win,COLOR_PAIR(7) | A_BOLD);
+    mvwprintw(*win,1,11," to leave");
+
+    mvwprintw(*win,2,2,"Press ");
+    wattron(*win,COLOR_PAIR(7) | A_BOLD);
+    mvwprintw(*win,2,8,"'r'");
+    wattroff(*win,COLOR_PAIR(7) | A_BOLD);
+    mvwprintw(*win,2,11," to restart");
+
+    mvwprintw(*win,4,2,"%s : %d points",player.username,player.score);
+    mvwprintw(*win,5,2,"%d placed forms and %d complete lines",player.numberForms,player.clearedLines);
+    
+    wattron(*win,COLOR_PAIR(7) | A_BOLD);
+    mvwprintw(*win,7,2,"Time passed : %d seconds",timer.elapsedTime);
+    mvwprintw(*win,8,2,"Drop speed : %d milliseconds",timer.speed);
+    wattroff(*win,COLOR_PAIR(7) | A_BOLD);
+
+    mvwprintw(*win,10,2,"Simple line : %d points",player.points[0]);
+    mvwprintw(*win,11,2,"Double line : %d points",player.points[1]);
+    mvwprintw(*win,12,2,"Triple line : %d points",player.points[2]);
+    mvwprintw(*win,13,2,"Tetris line : %d points",player.points[3]);
+
+    wattron(*win,COLOR_PAIR(7) | A_BOLD);
+    mvwprintw(*win,15,2,"Next form : ");
+    wattroff(*win,COLOR_PAIR(7) | A_BOLD);
+    int column=7-nextform.width;
+    for(i=0;i<DIMENSION;i++){
+        for(j=0;j<DIMENSION;j++){
+            if(nextform.tab[nextform.currentForm][i][j]!=0){
+                displayEmoji(*win,17+i,column+2*j,nextform.currentForm+1);
             }
-        }
-        if(completeLine==1){
-            for(j=0;j<grid->N;j++){
-                grid->tab[i][j]=0;
-            }
-            *grid=gravityEffect(*grid,i);
-            displayScreen(*grid,timer,player,currentform,nextform,&win);
-            usleep(500000);
-            counter++;
         }
     }
-    return counter;
+
+    displayGrid(grid,currentform,*win);
+    if(ranking==1){
+        wattron(*win,COLOR_PAIR(7) | A_BOLD);
+        mvwprintw(*win,22,2,"Ranking :");
+        wattroff(*win,COLOR_PAIR(7) | A_BOLD);
+        displayRanking(*win,24,2);
+    }
+    wrefresh(*win);
 }

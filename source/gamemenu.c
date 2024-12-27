@@ -65,10 +65,10 @@ void displayExit(WINDOW *win){
 }
 
 void displayMenu(WINDOW *win, int choice[CHOICES], int cursor){
-    if(choice[cursor]==0){
+    if(choice[cursor]==NEWGAME){
         displayNewGame(win);
     }
-    else if(choice[cursor]==1){
+    else if(choice[cursor]==RESUMEGAME){
         displayResumeGame(win);
     }
     else{
@@ -85,6 +85,7 @@ void displayMenu(WINDOW *win, int choice[CHOICES], int cursor){
 
 int movementMenu(WINDOW *win, int *cursor, int size, int choice, int mode){
     int movement=wgetch(win);
+
     if((movement==KEY_LEFT || movement=='q') && *cursor>0){
         if(mode==-1 && *cursor-1==RESUMEGAME && existFile("normalGame.bin")==0 && existFile("customGame.bin")==0){
             (*cursor)-=2;
@@ -128,6 +129,28 @@ void displayCustomMode(WINDOW *win){
     mvwprintw(win,line+3,column,"\\___/\\_,_/___/\\__/\\___/_/_/_/"); 
 }
 
+void displayMenuKeys(WINDOW *win){
+    mvwprintw(win,2,2,"Press ");
+    mvwprintw(win,3,2,"Press ");
+    mvwprintw(win,4,2,"Press ");
+    wattron(win,COLOR_PAIR(7) | A_BOLD);
+    mvwprintw(win,2,8,"'ENTER'");
+    mvwprintw(win,3,8,"'←' ");
+    wattroff(win,COLOR_PAIR(7) | A_BOLD);
+    mvwprintw(win,3,12,"or ");
+    wattron(win,COLOR_PAIR(7) | A_BOLD);
+    mvwprintw(win,3,15,"'q'");
+    mvwprintw(win,4,8,"'→' ");
+    wattroff(win,COLOR_PAIR(7) | A_BOLD);
+    mvwprintw(win,4,12,"or ");
+    wattron(win,COLOR_PAIR(7) | A_BOLD);
+    mvwprintw(win,4,15,"'d'");
+    wattroff(win,COLOR_PAIR(7) | A_BOLD);
+    mvwprintw(win,2,15," to select");
+    mvwprintw(win,3,18," to move left");
+    mvwprintw(win,4,18," to move right");
+}
+
 void choiceMenu(int *menuchoice, int *gamemode){
     int choice[CHOICES]={NEWGAME,RESUMEGAME,EXIT};
     int mode[MODES]={NORMALMODE,CUSTOMMODE};
@@ -141,6 +164,7 @@ void choiceMenu(int *menuchoice, int *gamemode){
             keypad(win,TRUE);
             box(win,0,0);
 
+            displayMenuKeys(win);
             displayMenu(win,choice,cursor);
             userchoice=movementMenu(win,&cursor,CHOICES,choice[cursor],-1);
             wrefresh(win);
@@ -158,9 +182,16 @@ void choiceMenu(int *menuchoice, int *gamemode){
                 keypad(win,TRUE);
                 box(win,0,0);
 
+                displayMenuKeys(win);
+                mvwprintw(win,5,2,"Press ");
+                wattron(win,COLOR_PAIR(7) | A_BOLD);
+                mvwprintw(win,5,8,"'b'");
+                wattroff(win,COLOR_PAIR(7) | A_BOLD);
+                mvwprintw(win,5,11," to return back");
+
                 displayMenu(win,choice,cursor);
                 wattron(win,COLOR_PAIR(7) | A_BOLD);
-                if(cursormode==0){
+                if(mode[cursormode]==NORMALMODE){
                     displayNormalMode(win);
                     wattroff(win,COLOR_PAIR(7) | A_BOLD);
                     displayCustomMode(win);

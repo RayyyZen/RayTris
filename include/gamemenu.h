@@ -1,8 +1,6 @@
 #ifndef GAMEMENU_H
 #define GAMEMENU_H
 
-#include "library.h"
-#include "player.h"
 #include "gamefile.h"
 
 #define CHOICES 3
@@ -23,6 +21,7 @@ void displayMenu(WINDOW *win, int choice[CHOICES], int cursor);
 int movementMenu(WINDOW *win, int *cursor, int size, int choice, int mode);
 void displayNormalMode(WINDOW *win);
 void displayCustomMode(WINDOW *win);
+void displayMenuKeys(WINDOW *win);
 void choiceMenu(int *menuchoice, int *gamemode);
 void menu(int *choice, int *mode, Grid *grid, Player *player, Timer *timer, Form form, Form *currentform, Form *nextform);
 
