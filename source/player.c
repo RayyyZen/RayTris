@@ -280,9 +280,9 @@ void displayEndScreen(Grid grid, Timer timer, Player player, Form currentform, F
 
     mvwprintw(*win,2,2,"Press ");
     wattron(*win,COLOR_PAIR(7) | A_BOLD);
-    mvwprintw(*win,2,8,"'r'");
+    mvwprintw(*win,2,8,"'m'");
     wattroff(*win,COLOR_PAIR(7) | A_BOLD);
-    mvwprintw(*win,2,11," to restart");
+    mvwprintw(*win,2,11," to return to menu");
 
     mvwprintw(*win,4,2,"%s : %d points",player.username,player.score);
     mvwprintw(*win,5,2,"%d placed forms and %d complete lines",player.numberForms,player.clearedLines);

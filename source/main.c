@@ -21,9 +21,9 @@ int main(){
     Timer timer;
     int choice=-1,mode=-1,delete=0,movement=0,counter=0,car=0;
     char fileNameGame[20],fileNameArray[20];
-    struct timespec ts;
-    ts.tv_sec = 0;           // Secondes
-    ts.tv_nsec = 200 * 1000000L; // 200 millisecondes en nanosecondes
+    struct timespec timeSleep;
+    timeSleep.tv_sec = 0;           // Secondes
+    timeSleep.tv_nsec = 200 * 1000000L; // 200 millisecondes en nanosecondes
 
     do{
 
@@ -64,7 +64,7 @@ int main(){
             do{
                 delete=deleteLine(&grid);
                 displayScreen(grid,&timer,player,currentform,nextform,&win);
-                nanosleep(&ts, NULL);
+                nanosleep(&timeSleep, NULL);
                 counter+=delete;
             }while(delete!=0);
             player.clearedLines+=counter;
@@ -106,9 +106,9 @@ int main(){
 
         do{
             car=wgetch(win);
-        }while(car!='r' && car!='l');
+        }while(car!='m' && car!='l');
 
-    }while(car=='r');
+    }while(car=='m');
 
     wclear(win);
     clear();
