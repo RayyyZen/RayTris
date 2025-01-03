@@ -54,7 +54,7 @@ int main(){
         movement=0;
 
         do{
-            if(playerMovement(&grid,&timer,&player,currentform,nextform,win)==-1){
+            if(playerMovement(&grid,&timer,&player,&currentform,nextform,win)==-1){
                 movement=-1;
                 break;
             }

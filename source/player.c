@@ -135,7 +135,7 @@ void getFormCoordinates(Grid *grid, Form currentform){
 }
 
 //This function allows the player to control the movement of the form dropping until it hits another form or the bottom of the grid
-int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, Form nextform, WINDOW *win){
+int playerMovement(Grid *grid, Timer *timer, Player *player, Form *currentform, Form nextform, WINDOW *win){
     struct timespec current;
     long start=0,final=0,passedTime=0;
     int i=0,j=0,right=0,left=0,down=0;
@@ -151,7 +151,7 @@ int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, F
     clock_gettime(CLOCK_REALTIME,&current);
     start=current.tv_sec*1000+current.tv_nsec/1000000;
     do{
-        displayScreen(*grid,timer,*player,currentform,nextform,&win);
+        displayScreen(*grid,timer,*player,*currentform,nextform,&win);
         movement=wgetch(win);
 
         if(movement=='l'){
@@ -168,7 +168,7 @@ int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, F
             down=1;
             for(i=grid->x1;i<=grid->x2;i++){
                 for(j=grid->y1;j<=grid->y2;j++){
-                    if(grid->x2==grid->M-1 || (currentform.tab[currentform.currentForm][i-grid->x1][j-grid->y1]!=0 && (i-grid->x1==DIMENSION-1 || currentform.tab[currentform.currentForm][i-grid->x1+1][j-grid->y1]==0) && grid->tab[i+1][j]!=0)){
+                    if(grid->x2==grid->M-1 || (currentform->tab[currentform->currentForm][i-grid->x1][j-grid->y1]!=0 && (i-grid->x1==DIMENSION-1 || currentform->tab[currentform->currentForm][i-grid->x1+1][j-grid->y1]==0) && grid->tab[i+1][j]!=0)){
                         down=0;
                     }
                 }
@@ -187,7 +187,7 @@ int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, F
             right=1;
             for(i=grid->x1;i<=grid->x2;i++){
                 for(j=grid->y1;j<=grid->y2;j++){
-                    if(grid->y2==grid->N-1 || (currentform.tab[currentform.currentForm][i-grid->x1][j-grid->y1]!=0 && (j-grid->y1==DIMENSION-1 || currentform.tab[currentform.currentForm][i-grid->x1][j-grid->y1+1]==0) && grid->tab[i][j+1]!=0)){
+                    if(grid->y2==grid->N-1 || (currentform->tab[currentform->currentForm][i-grid->x1][j-grid->y1]!=0 && (j-grid->y1==DIMENSION-1 || currentform->tab[currentform->currentForm][i-grid->x1][j-grid->y1+1]==0) && grid->tab[i][j+1]!=0)){
                         right=0;
                     }
                 }
@@ -201,7 +201,7 @@ int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, F
             left=1;
             for(i=grid->x1;i<=grid->x2;i++){
                 for(j=grid->y1;j<=grid->y2;j++){
-                    if(grid->y1==0 || (currentform.tab[currentform.currentForm][i-grid->x1][j-grid->y1]!=0 && (j-grid->y1==0 || currentform.tab[currentform.currentForm][i-grid->x1][j-grid->y1-1]==0) && grid->tab[i][j-1]!=0)){
+                    if(grid->y1==0 || (currentform->tab[currentform->currentForm][i-grid->x1][j-grid->y1]!=0 && (j-grid->y1==0 || currentform->tab[currentform->currentForm][i-grid->x1][j-grid->y1-1]==0) && grid->tab[i][j-1]!=0)){
                         left=0;
                     }
                 }
@@ -212,7 +212,7 @@ int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, F
             }
         }
         else if(movement==' '){
-            tmpform=currentform;
+            tmpform=(*currentform);
             rotateForm(tmpform.tab[tmpform.currentForm]);
             shiftFormLeftUp(tmpform.tab[tmpform.currentForm]);
             getFormDimensions(tmpform.tab[tmpform.currentForm],&tmpform.height,&tmpform.width);
@@ -227,19 +227,19 @@ int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, F
                 }
             }
             if(validRotation==1){
-                currentform=tmpform;
+                (*currentform)=tmpform;
             }
             else{
-                grid->x2=grid->x1+currentform.height-1;
-                grid->y2=grid->y1+currentform.width-1;
+                grid->x2=grid->x1+currentform->height-1;
+                grid->y2=grid->y1+currentform->width-1;
             }
         }
     }while(1);
 
     for(i=grid->x1;i<=grid->x2;i++){
         for(j=grid->y1;j<=grid->y2;j++){
-            if(currentform.tab[currentform.currentForm][i-grid->x1][j-grid->y1]!=0){
-                grid->tab[i][j]=currentform.currentForm+1;
+            if(currentform->tab[currentform->currentForm][i-grid->x1][j-grid->y1]!=0){
+                grid->tab[i][j]=currentform->currentForm+1;
             }
         }
     }
