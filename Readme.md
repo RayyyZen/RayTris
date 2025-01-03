@@ -4,7 +4,7 @@
 
 ## Introduction
 
-**RayTris** is a game I created in C using the `ncurses` library during my second year of preparatory engineering studies to strengthen my programming skills. Inspired by the famous game **Tetris**, the game features a grid where different forms falls in until it gets to a soid area. By completing a line horizontally, the line is destroyed and all the above forms fall down a notch. The player's score is increased depending on the number of lines completed simultaneously, and the goal is to reach the highest score while avoiding making any block exceed the limit at the top.
+**RayTris** is a game I created in C using the `ncurses` library during my second year of preparatory engineering studies to enhance my programming skills. Inspired by the iconic game **Tetris**, it features a grid where various forms fall until they reach a solid surface. When a horizontal line is completed, it is cleared, and all the forms above it drop down by one row. The player's score increases based on the number of lines cleared simultaneously. The forms dropping speed increased each 30 seconds. The objective is to achieve the highest score possible while ensuring no blocks exceed the upper limit of the grid.
 
 ## Prerequisites
 
@@ -42,13 +42,29 @@ make && ./RayTris
 ![RayTetris](data/RayTetrisMenu.png)
 
 ### Menu options 
-- New game : Start a new game session
-- Resume game : Load the last saved game
+- New : Start a new game session
+- Resume : Load the last saved game session
 - Exit : Quit the game
 
-### Game modes 
-- #### Normal mode 
-- #### Custom mode
+### Game modes
+
+#### Normal mode 
+- Username : Chosen by the player under 10 caracters
+- Lines : 15
+- Columns : 10
+- Simple Line : 100 points
+- Double Line : 300 points
+- Triple Line : 500 points
+- Tetris Line : 800 points
+
+#### Custom mode
+- Username : Chosen by the player under 10 caracters
+- Lines : Chosen by the player between 10 and 18
+- Columns : Chosen by the player between 10 and 25
+- Simple Line : Chosen by the player between 0 and 10000 points
+- Double Line : Chosen by the player between 0 and 10000 points
+- Triple Line : Chosen by the player between 0 and 10000 points
+- Tetris Line : Chosen by the player between 0 and 10000 points
 
 ### Game controls :
 - `ENTER` : Select a menu option
@@ -62,9 +78,7 @@ make && ./RayTris
 
 ### Gameplay :
 
-1. .
-
-2. .
+A form appears at the top middle of the grid, and it can be moved using the keys shown in the "Game controls" section. Due to gravity, the form gradually falls until it hits a solid surface, and the process repeats until a block exceeds the top limit. In normal mode, after the game ends, the screen displays the top 3 players with the highest scores.
 
 ## License
 

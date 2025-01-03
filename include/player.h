@@ -5,7 +5,7 @@
 #include "gametime.h"
 
 typedef struct{
-    char username[30];
+    char username[22];
     int clearedLines;
     int numberForms;
     int points[4];

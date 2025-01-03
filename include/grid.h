@@ -19,7 +19,7 @@ typedef struct{
 }Grid;
 
 int absoluteValue(int value);
-int stringToInteger(char string[3], int min, int max);
+int stringToInteger(char *string, int min, int max);
 int** createArray(int height, int width);
 Grid createGrid(WINDOW *win);
 void displayEmoji(WINDOW *win, int x, int y, int form);

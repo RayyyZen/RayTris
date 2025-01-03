@@ -94,9 +94,9 @@ int main(){
                 }
                 fclose(file);
             }
-            addFileScore("topScores.txt",player);
             removeSaves(fileNameGame,fileNameArray);
             if(mode==NORMALMODE){
+                addFileScore("topScores.txt",player);
                 displayEndScreen(grid,timer,player,currentform,nextform,&win,1);
             }
             else{

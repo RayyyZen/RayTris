@@ -6,19 +6,27 @@ int absoluteValue(int value){
 }
 
 //This function transforms a string to an integer with a value between a min and a max given as arguments
-int stringToInteger(char string[3], int min, int max){
-    int value=0;
-    if(string[1]=='\0'){
-        value=absoluteValue(string[0]-'0');
+int stringToInteger(char *string, int min, int max){
+    int index=0,value=0,isNumber=1,sum=0;
+    while(string[index]!='\0'){
+        if(string[index]<'0' || string[index]>'9'){
+            isNumber=0;
+        }
+        sum+=string[index];
+        index++;
+    }
+    if(isNumber==1){
+        value=atoi(string);
     }
     else{
-        value=absoluteValue((string[0]-'0')*10+(string[1]-'0'));
+        value=sum;
     }
+
     if(value>=min && value<=max){
         return value;
     }
     else{
-        return value%(max-min+1)+min;
+        return absoluteValue(value)%(max-min+1)+min;
     }
 }
 
