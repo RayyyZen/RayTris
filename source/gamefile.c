@@ -24,7 +24,7 @@ void destroyGrid(Grid *grid){
     grid->tab=NULL;
 }
 
-//This function saves the game
+//This function saves the game informations
 void saveGame(Grid grid, Player player, Timer timer, Form currentform, Form nextform, char *fileName){
     FILE *file=fopen(fileName,"wb");
     //If the file does not exist it will be created because I use the "wb" mode
@@ -36,7 +36,7 @@ void saveGame(Grid grid, Player player, Timer timer, Form currentform, Form next
     fclose(file);
 }
 
-//This function recovers the array that is previously saved
+//This function recovers the array that was previously saved
 void recoverArray(Grid *grid, char *fileName){
     FILE *file=fopen(fileName,"rb");
     int i=0;
@@ -57,7 +57,7 @@ void recoverArray(Grid *grid, char *fileName){
     fclose(file);
 }
 
-//This function recovers the game that is previously saved
+//This function recovers the game that was previously saved
 void recoverGame(Grid *grid, Player *player, Timer *timer, Form *currentform, Form *nextform, char *fileName){
     FILE *file=NULL;
     Game game;
@@ -89,6 +89,7 @@ void removeSaves(char *fileName1, char *fileName2){
     }
 }
 
+//This function checks if a file exists or not
 int existFile(char *fileName){
     FILE *file=fopen(fileName,"rb");
     if(file==NULL){
@@ -98,6 +99,7 @@ int existFile(char *fileName){
     return 1;
 }
 
+//This function adds the score of the player in a file containing the top 3 scores in the normal mode
 void addFileScore(char *fileName, Player player){
     FILE *file=fopen(fileName,"r");
     char tabUserName[4][20];

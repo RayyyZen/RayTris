@@ -1,5 +1,6 @@
 #include "player.h"
 
+//This function creates a player
 Player createPlayer(WINDOW *win, int points[4]){
     Player player;
     char string[6];
@@ -47,6 +48,7 @@ Player createPlayer(WINDOW *win, int points[4]){
     return player;
 }
 
+//This function displays the useful keys to play the game
 void displayGameKeys(WINDOW *win){
     mvwprintw(win,1,2,"Press ");
     mvwprintw(win,2,2,"Press ");
@@ -79,13 +81,16 @@ void displayGameKeys(WINDOW *win){
     mvwprintw(win,5,18," to move down");
 }
 
+//This function displays the screen containing the grid and some other informations related to the player and the game keys
 void displayScreen(Grid grid, Timer *timer, Player player, Form currentform, Form nextform, WINDOW **win){
     int i=0,j=0;
     
     werase(*win);
     *win=newwin(BOXLINES,BOXCOLUMNS,0,0);
     wbkgd(*win,COLOR_PAIR(1));
+    //To keep the background black
     keypad(*win,TRUE);
+    //To activate the special keys as KEY_UP ...
     box(*win,0,0);
     wtimeout(*win,timer->speed);
 
@@ -121,6 +126,7 @@ void displayScreen(Grid grid, Timer *timer, Player player, Form currentform, For
     wrefresh(*win);
 }
 
+//This function gets the coordinates of a new form in the grid
 void getFormCoordinates(Grid *grid, Form currentform){
     grid->x1=0;
     grid->y1=grid->N/2-currentform.width/2;
@@ -128,6 +134,7 @@ void getFormCoordinates(Grid *grid, Form currentform){
     grid->y2=grid->y1+currentform.width-1;
 }
 
+//This function allows the player to control the movement of the form dropping until it hits another form or the bottom of the grid
 int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, Form nextform, WINDOW *win){
     struct timespec current;
     long start=0,final=0,passedTime=0;
@@ -136,6 +143,7 @@ int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, F
     Form tmpform;
 
     timer->speed=MINSPEED-25*(timer->elapsedTime/30);
+    //Increases the speed by 25 ms every 30 seconds
     if(timer->speed<MAXSPEED){
         timer->speed=MAXSPEED;
     }
@@ -239,6 +247,7 @@ int playerMovement(Grid *grid, Timer *timer, Player *player, Form currentform, F
     return 0;
 }
 
+//This function displays the ranking of the top 3 scores in the normal mode
 void displayRanking(WINDOW *win, int line, int column){
     int counter=0;
     FILE *file=fopen("topScores.txt","r");
@@ -262,6 +271,7 @@ void displayRanking(WINDOW *win, int line, int column){
     fclose(file);
 }
 
+//This function displays the end screen
 void displayEndScreen(Grid grid, Timer timer, Player player, Form currentform, Form nextform, WINDOW **win, int ranking){
     int i=0,j=0;
     

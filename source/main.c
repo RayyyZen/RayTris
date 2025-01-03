@@ -2,6 +2,7 @@
 
 int main(){
     setlocale(LC_ALL, "");
+    //To activate the Unicode caracters
     initscr();
     //cbreak();
     curs_set(0);
@@ -22,8 +23,10 @@ int main(){
     int choice=-1,mode=-1,delete=0,movement=0,counter=0,car=0;
     char fileNameGame[20],fileNameArray[20];
     struct timespec timeSleep;
-    timeSleep.tv_sec = 0;           // Secondes
-    timeSleep.tv_nsec = 200 * 1000000L; // 200 millisecondes en nanosecondes
+    timeSleep.tv_sec = 0;
+    //Secondes
+    timeSleep.tv_nsec = 200 * 1000000L;
+    //200 milliseconds in nanoseconds
 
     do{
 
@@ -63,8 +66,11 @@ int main(){
             counter=0;
             do{
                 delete=deleteLine(&grid);
+                if(counter!=0 && delete==1){
+                    nanosleep(&timeSleep, NULL);
+                    //It stops the program for 200 milliseconds
+                }
                 displayScreen(grid,&timer,player,currentform,nextform,&win);
-                nanosleep(&timeSleep, NULL);
                 counter+=delete;
             }while(delete!=0);
             player.clearedLines+=counter;

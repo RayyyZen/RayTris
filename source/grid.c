@@ -1,9 +1,11 @@
 #include "grid.h"
 
+//This function returns the absolute value of a number
 int absoluteValue(int value){
     return value>0 ? value : -value;
 }
 
+//This function transforms a string to an integer with a value between a min and a max given as arguments
 int stringToInteger(char string[3], int min, int max){
     int value=0;
     if(string[1]=='\0'){
@@ -20,6 +22,7 @@ int stringToInteger(char string[3], int min, int max){
     }
 }
 
+//This function creates the array that will contain the forms
 int** createArray(int height, int width){
     int **tab=NULL;
     int i=0;
@@ -39,6 +42,7 @@ int** createArray(int height, int width){
     return tab;
 }
 
+//This function creates a grid according to the player's input
 Grid createGrid(WINDOW *win){
     Grid grid={NULL,0,0,-1,-1,-1,-1};
     char string[3];
@@ -62,6 +66,7 @@ Grid createGrid(WINDOW *win){
     return grid;
 }
 
+//This function displays emojis according to the form type
 void displayEmoji(WINDOW *win, int x, int y, int form){
     switch(form){
         case IFORM :
@@ -90,7 +95,7 @@ void displayEmoji(WINDOW *win, int x, int y, int form){
     }
 }
 
-
+//This function displays the grid containing the forms
 void displayGrid(Grid grid, Form form, WINDOW *win){
     int i=0,j=0,line=BOXLINES/2-grid.M/2,column=(11*BOXCOLUMNS)/20-grid.N/2;
     for(i=0;i<grid.M;i++){
@@ -116,6 +121,7 @@ void displayGrid(Grid grid, Form form, WINDOW *win){
     }
 }
 
+//This function simulates the gravity effect after deleting a line
 Grid gravityEffect(Grid grid, int line){
     int i=0,j=0;
 
@@ -129,6 +135,7 @@ Grid gravityEffect(Grid grid, int line){
     return grid;
 }
 
+//This function deletes a complete line and simulates the gravity effect
 int deleteLine(Grid *grid){
     int i=0,j=0,completeLine=0;
     for(i=5;i<grid->M;i++){
@@ -149,6 +156,7 @@ int deleteLine(Grid *grid){
     return 0;
 }
 
+//This function checks if the player lost
 int loseCondition(Grid grid){
     int i=0,j=0;
     for(i=0;i<5;i++){

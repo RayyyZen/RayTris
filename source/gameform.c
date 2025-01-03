@@ -1,5 +1,6 @@
 #include "gameform.h"
 
+//This function creates all the 7 Tetris forms
 Form createForms(){
     Form form={{
         {
@@ -27,6 +28,7 @@ Form createForms(){
     return form;
 }
 
+//This function rotates a form to the right
 void rotateForm(int tab[DIMENSION][DIMENSION]){
     int tmp1[DIMENSION],tmp2[DIMENSION],tmp3[DIMENSION],tmp4[DIMENSION];
     int i=0,k=0;
@@ -46,6 +48,7 @@ void rotateForm(int tab[DIMENSION][DIMENSION]){
     }
 }
 
+//This function moves a form to the left up corner
 void shiftFormLeftUp(int tab[DIMENSION][DIMENSION]){
     int left[DIMENSION]={1,1,1,1},up[DIMENSION]={1,1,1,1};
     int i=0,j=0,k=0;
@@ -92,6 +95,7 @@ void shiftFormLeftUp(int tab[DIMENSION][DIMENSION]){
     }
 }
 
+//This function returns the height and the width of a form
 void getFormDimensions(int tab[DIMENSION][DIMENSION], int *height, int *width){
     int i=0,j=0;
     *height=0;
@@ -110,6 +114,7 @@ void getFormDimensions(int tab[DIMENSION][DIMENSION], int *height, int *width){
     }
 }
 
+//This function generates a new form and returns it
 Form generateNewForm(Form form){
     form.currentForm=rand()%NUMBERFORMS;
     shiftFormLeftUp(form.tab[form.currentForm]);

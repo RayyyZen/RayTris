@@ -4,7 +4,7 @@
 #include "library.h"
 
 #define MINSPEED 400 //in ms (milliseconds)
-#define MAXSPEED 100
+#define MAXSPEED 100 //in ms (milliseconds)
 
 typedef struct{
     time_t start;

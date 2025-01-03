@@ -1,6 +1,6 @@
 #include "library.h"
 
-//This function activates all the existing color combinations
+//This function activates some existing color combinations
 void initializeColor(){
     start_color();
     init_pair(0, COLOR_WHITE, COLOR_WHITE);
