@@ -4,7 +4,7 @@
 
 ## Introduction
 
-**RayTris** is a game I created in C using the `ncurses` library during my second year of preparatory engineering studies to enhance my programming skills. Inspired by the iconic game **Tetris**, it features a grid where various forms fall until they reach a solid surface. When a horizontal line is completed, it is cleared, and all the forms above it drop down by one row. The player's score increases based on the number of lines cleared simultaneously. The forms dropping speed increased each 30 seconds. The objective is to achieve the highest score possible while ensuring no blocks exceed the upper limit of the grid.
+**RayTris** is a game I created in C using the `ncurses` library during my second year of preparatory engineering studies to enhance my programming skills. Inspired by the iconic game **Tetris**, it features a grid where various forms fall until they reach a solid surface. When a horizontal line is completed, it is cleared, and all the forms above it drop down by one row. The player's score increases based on the number of lines cleared simultaneously. The speed at which the forms drop increases every 30 seconds. The objective is to achieve the highest score possible while ensuring no blocks exceed the upper limit of the grid.
 
 ## Prerequisites
 
